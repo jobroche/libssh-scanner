@@ -62,7 +62,7 @@ if args.target:
 
 
 for ip in ips:
-  result = ([ip, args.port, bannergrab(ip, args.port)])
+  result = ([ip, int(args.port), bannergrab(ip, int(args.port))])
   if result[2]:
     if "libssh-0.6" in result[2]: #vulnerable
       pvulnerable(result[0], result[1], result[2])

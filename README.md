@@ -1,4 +1,4 @@
-# libssh Scan
+# libssh scanner
 
 ## Introduction
 -----
