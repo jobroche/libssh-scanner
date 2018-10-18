@@ -14,7 +14,7 @@ class colors(object):
 def pstatus(ip, port, banner):
   print "{blue}[*]{white} {ipaddr}:{port} is not vulnerable to authentication bypass ({banner})".format(blue=colors.blue, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()) 
 
-def ptimeout(ip, port, banner):
+def ptimeout(ip, port):
   print "{red}[-]{white} {ipaddr}:{port} has timed out.".format(red=colors.red, white=colors.white, ipaddr=ip, port=port)
 
 def ppatch(ip, port, banner):
@@ -27,12 +27,16 @@ def pvulnerable(ip, port, banner):
 def bannergrab(ip, port):
   try:
     s = socket.socket()
+    s.setblocking(1)
     s.connect((ip,port))
     s.settimeout(2.00000)
     banner = s.recv(1024)
     s.close()
     return banner
   except socket.timeout as e:
+    pass
+    return ""
+  except socket.error as e:
     pass
     return ""
 
@@ -81,7 +85,7 @@ for result in results:
     else: #not vulnerable
       pstatus(result[0], result[1], result[2])
   else:
-    ptimeout("[*] {}:{} timed out".format(result[0], result[1]))
+    ptimeout(result[0], result[1])
 
 
 print "\nScanner Completed Successfully"
