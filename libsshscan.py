@@ -27,8 +27,8 @@ def pvulnerable(ip, port, banner):
 def bannergrab(ip, port):
   try:
     s = socket.socket()
-    s.connect((ip,port))
     s.settimeout(2.00000)
+    s.connect((ip,port))
     banner = s.recv(1024)
     s.close()
     return banner
