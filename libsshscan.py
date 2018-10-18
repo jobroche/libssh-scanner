@@ -9,13 +9,12 @@ class colors(object):
     normal = "\033[0;00m"
     red = "\033[1;31m"
     yellow = "\033[1;33m"
-    white = "\033[1;37m"
 
 def pstatus(ip, port, banner):
   print "{blue}[*]{white} {ipaddr}:{port} is not vulnerable to authentication bypass ({banner})".format(blue=colors.blue, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()) 
 
 def ptimeout(ip, port):
-  print "{red}[-]{white} {ipaddr}:{port} has timed out.".format(red=colors.red, white=colors.white, ipaddr=ip, port=port)
+  print "{red}[-]{white} {ipaddr}:{port} has timed out.".format(red=colors.red, white=colors.normal, ipaddr=ip, port=port)
 
 def ppatch(ip, port, banner):
   print "{blue}[*]{white} {ipaddr}:{port} has been patched ({banner})".format(blue=colors.blue, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()) 
@@ -26,18 +25,16 @@ def pvulnerable(ip, port, banner):
 
 def bannergrab(ip, port):
   try:
-    s = socket.socket()
-    s.settimeout(2.00000)
-    s.connect((ip,port))
+    s = socket.create_connection((ip, port), timeout=0.30000)
+    s.settimeout(None)
     banner = s.recv(1024)
     s.close()
     return banner
-  except ( socket.timeout, socket.error ) as e:
-    pass
+  except (socket.timeout, socket.error) as e:
     return ""
 
 parser = argparse.ArgumentParser(description='CVE-2018-10933 Scanner - Find vulnerable libssh services by Leap Security (@LeapSecurity)', version="1.0.0")
-parser.add_argument('-t', '--target', help="An ip address or new line delimited file containing IPs to banner grab for the vulnerability.")
+parser.add_argument('target', help="An ip address or new line delimited file containing IPs to banner grab for the vulnerability.")
 parser.add_argument('-p', '--port', default=22, help="Set port of SSH service")
 
 if len(sys.argv) == 1:
