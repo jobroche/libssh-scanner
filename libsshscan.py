@@ -27,16 +27,12 @@ def pvulnerable(ip, port, banner):
 def bannergrab(ip, port):
   try:
     s = socket.socket()
-    s.setblocking(1)
     s.connect((ip,port))
     s.settimeout(2.00000)
     banner = s.recv(1024)
     s.close()
     return banner
-  except socket.timeout as e:
-    pass
-    return ""
-  except socket.error as e:
+  except ( socket.timeout, socket.error ) as e:
     pass
     return ""
 
@@ -57,7 +53,7 @@ if not args.target:
 
 if args.target:
       print "\nStatus: Searching for Vulnerable Hosts...\n"
-      if os.path.isfile(args.target): #if file add emails
+      if os.path.isfile(args.target): #if file add hosts
           with open (args.target) as f:
               for line in f.readlines():
                   ips.append(line.strip())
@@ -66,9 +62,7 @@ if args.target:
 
 
 for ip in ips:
-  results.append([ip, args.port, bannergrab(ip, args.port)])
-
-for result in results:
+  result = ([ip, args.port, bannergrab(ip, args.port)])
   if result[2]:
     if "libssh-0.6" in result[2]: #vulnerable
       pvulnerable(result[0], result[1], result[2])
