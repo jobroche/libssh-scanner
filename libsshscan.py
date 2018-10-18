@@ -62,7 +62,7 @@ if args.target:
 
 
 for ip in ips:
-  results.append([ip, args.port, bannergrab(ip, args.port)])
+  results.append([ip, int(args.port), bannergrab(ip, int(args.port))])
 
 for result in results:
   if result[2]:
