@@ -13,11 +13,12 @@ The vulnerability is present on versions of libssh 0.6+ and was remediated by a 
 ```
 CVE-2018-10933 Scanner - Find vulnerable libssh services by Leap Security (@LeapSecurity)
 
+positional arguments:
+  target                An ip address or new line delimited file containing
+                        IPs to banner grab for the vulnerability.
+
 optional arguments:
   -h, --help            show this help message and exit
   -v, --version         show program's version number and exit
-  -t TARGET, --target TARGET
-                        An ip address or new line delimited file containing
-                        IPs to banner grab for the vulnerability.
   -p PORT, --port PORT  Set port of SSH service
 ```
