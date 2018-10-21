@@ -2,6 +2,7 @@
 # CVE-2018-10933 Scanner by Leap Security (@LeapSecurity) https://leapsecurity.io
 
 
+from __future__ import print_function
 import socket, argparse, sys, os
 
 class colors(object):
@@ -11,16 +12,16 @@ class colors(object):
     yellow = "\033[1;33m"
 
 def pstatus(ip, port, banner):
-  print "{blue}[*]{white} {ipaddr}:{port} is not vulnerable to authentication bypass ({banner})".format(blue=colors.blue, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()) 
+  print("{blue}[*]{white} {ipaddr}:{port} is not vulnerable to authentication bypass ({banner})".format(blue=colors.blue, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip())) 
 
 def ptimeout(ip, port):
-  print "{red}[-]{white} {ipaddr}:{port} has timed out.".format(red=colors.red, white=colors.normal, ipaddr=ip, port=port)
+  print("{red}[-]{white} {ipaddr}:{port} has timed out.".format(red=colors.red, white=colors.normal, ipaddr=ip, port=port))
 
 def ppatch(ip, port, banner):
-  print "{blue}[*]{white} {ipaddr}:{port} has been patched ({banner})".format(blue=colors.blue, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()) 
+  print("{blue}[*]{white} {ipaddr}:{port} has been patched ({banner})".format(blue=colors.blue, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip())) 
 
 def pvulnerable(ip, port, banner):
-  print "{yellow}[!]{white} {ipaddr}:{port} is likely VULNERABLE to authentication bypass ({banner})".format(yellow=colors.yellow, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()) 
+  print("{yellow}[!]{white} {ipaddr}:{port} is likely VULNERABLE to authentication bypass ({banner})".format(yellow=colors.yellow, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip())) 
 
 
 def bannergrab(ip, port):
@@ -45,11 +46,11 @@ args = parser.parse_args()
 ips, results = [], []
 
 if not args.target:
-    print "You didn't provide any work for me to do."
+    print("You didn't provide any work for me to do.")
     sys.exit(1)
 
 if args.target:
-      print "\nStatus: Searching for Vulnerable Hosts...\n"
+      print("\nStatus: Searching for Vulnerable Hosts...\n")
       if os.path.isfile(args.target): #if file add hosts
           with open (args.target) as f:
               for line in f.readlines():
@@ -79,4 +80,4 @@ for ip in ips:
     ptimeout(result[0], result[1])
 
 
-print "\nScanner Completed Successfully"
+print("\nScanner Completed Successfully")
