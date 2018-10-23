@@ -4,6 +4,8 @@
 
 import socket, argparse, sys, os, paramiko
 
+VERSION = "1.0.2"
+
 class colors(object):
     blue = "\033[1;34m"
     normal = "\033[0;00m"
@@ -11,16 +13,16 @@ class colors(object):
     yellow = "\033[1;33m"
 
 def pstatus(ip, port, banner):
-  print "{blue}[*]{white} {ipaddr}:{port} is not vulnerable to authentication bypass ({banner})".format(blue=colors.blue, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()) 
+  print("{blue}[*]{white} {ipaddr}:{port} is not vulnerable to authentication bypass ({banner})".format(blue=colors.blue, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()))
 
 def ptimeout(ip, port):
-  print "{red}[-]{white} {ipaddr}:{port} has timed out.".format(red=colors.red, white=colors.normal, ipaddr=ip, port=port)
+  print("{red}[-]{white} {ipaddr}:{port} has timed out.".format(red=colors.red, white=colors.normal, ipaddr=ip, port=port))
 
 def ppatch(ip, port, banner):
-  print "{blue}[*]{white} {ipaddr}:{port} has been patched ({banner})".format(blue=colors.blue, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()) 
+  print("{blue}[*]{white} {ipaddr}:{port} has been patched ({banner})".format(blue=colors.blue, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()))
 
 def pvulnerable(ip, port, banner):
-  print "{yellow}[!]{white} {ipaddr}:{port} is likely VULNERABLE to authentication bypass ({banner})".format(yellow=colors.yellow, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()) 
+  print("{yellow}[!]{white} {ipaddr}:{port} is likely VULNERABLE to authentication bypass ({banner})".format(yellow=colors.yellow, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()))
 
 
 def passive(ip, port): #banner grab to verify vulnerable host
@@ -56,8 +58,9 @@ def aggressive(ip, port): #bypass auth to verify vulnerable host
   except Exception as e:
     pass
 
-parser = argparse.ArgumentParser(description='libssh Scanner - Find vulnerable libssh services by Leap Security (@LeapSecurity)', version="1.0.2")
+parser = argparse.ArgumentParser(description='libssh Scanner - Find vulnerable libssh services by Leap Security (@LeapSecurity)')
 parser.add_argument('target', help="An ip address or new line delimited file containing IPs to banner grab for the vulnerability.")
+parser.add_argument("-V", "--version", action="version", help="Show version and exit", default=VERSION)
 parser.add_argument('-p', '--port', default=22, help="Set port of SSH service")
 parser.add_argument("-a", "--aggressive", action="store_true", help="Identify vulnerable hosts by bypassing authentication")
 
@@ -68,7 +71,7 @@ if len(sys.argv) == 1:
 args = parser.parse_args()
 ips, results = [], []
 
-print "\nlibssh scanner {}\n".format(parser.version)
+print("\nlibssh scanner {}\n".format(VERSION))
 
 
 if os.path.isfile(args.target): #if file add hosts
@@ -79,7 +82,7 @@ else: #if not scan the provided IP
   ips.append(args.target.strip())
 
 
-print "Searching for Vulnerable Hosts...\n"
+print("Searching for Vulnerable Hosts...\n")
 if args.aggressive:
   paramiko.util.log_to_file("paramiko.log")
   for ip in ips:
@@ -88,14 +91,14 @@ else: #banner grab
   for ip in ips:
     banner = passive(ip, int(args.port)) #banner
     if banner:
-      if "libssh-0.6" in banner: #vulnerable
+      if b"libssh-0.6" in banner: #vulnerable
         pvulnerable(ip, args.port, banner)
-      elif "libssh-0.7" in banner: #chjeck if patched
+      elif b"libssh-0.7" in banner: #check if patched
         if int(banner.split(".")[-1]) >= 6: #libssh is 0.7.6 or greater (patched)
           ppatch(ip, args.port, banner)
         else:
           pvulnerable(ip, args.port, banner)
-      elif "libssh-0.8" in banner: #chjeck if patched
+      elif b"libssh-0.8" in banner: #check if patched
         if int(banner.split(".")[-1]) >= 4: #libssh is 0.8.4 or greater (patched)
           ppatch(ip, args.port, banner)
         else:
@@ -103,4 +106,4 @@ else: #banner grab
       else: #not vulnerable
         pstatus(ip, args.port, banner)
 
-print "\nScanner Completed Successfully"
+print("\nScanner Completed Successfully")
