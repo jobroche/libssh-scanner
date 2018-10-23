@@ -3,6 +3,7 @@
 
 
 import socket, argparse, sys, os, paramiko
+from netaddr import IPNetwork
 
 class colors(object):
     blue = "\033[1;34m"
@@ -57,7 +58,7 @@ def aggressive(ip, port): #bypass auth to verify vulnerable host
     pass
 
 parser = argparse.ArgumentParser(description='libssh Scanner - Find vulnerable libssh services by Leap Security (@LeapSecurity)', version="1.0.2")
-parser.add_argument('target', help="An ip address or new line delimited file containing IPs to banner grab for the vulnerability.")
+parser.add_argument('target', help="An ip address or new line delimited file containing IPs to banner grab for the vulnerability. Also accepts a CIDR range.")
 parser.add_argument('-p', '--port', default=22, help="Set port of SSH service")
 parser.add_argument("-a", "--aggressive", action="store_true", help="Identify vulnerable hosts by bypassing authentication")
 
@@ -75,6 +76,8 @@ if os.path.isfile(args.target): #if file add hosts
   with open (args.target) as f:
       for line in f.readlines():
           ips.append(line.strip())
+elif '/' in args.target: #if CIDR range, get hosts
+  ips = map(str, IPNetwork(args.target).iter_hosts())
 else: #if not scan the provided IP
   ips.append(args.target.strip())
 

@@ -20,7 +20,8 @@ libssh Scanner - Find vulnerable libssh services by Leap Security (@LeapSecurity
 
 positional arguments:
   target                An ip address or new line delimited file containing
-                        IPs to search for the vulnerability.
+                        IPs to search for the vulnerability. Also accepts
+                        a CIDR range.
 
 optional arguments:
   -h, --help            show this help message and exit
