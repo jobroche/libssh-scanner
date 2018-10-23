@@ -2,7 +2,8 @@
 # CVE-2018-10933 Scanner by Leap Security (@LeapSecurity) https://leapsecurity.io
 
 
-import socket, argparse, sys, os, paramiko
+import socket, argparse, sys, os, paramiko, ipaddress
+from six import text_type
 
 class colors(object):
     blue = "\033[1;34m"
@@ -57,7 +58,7 @@ def aggressive(ip, port): #bypass auth to verify vulnerable host
     pass
 
 parser = argparse.ArgumentParser(description='libssh Scanner - Find vulnerable libssh services by Leap Security (@LeapSecurity)', version="1.0.2")
-parser.add_argument('target', help="An ip address or new line delimited file containing IPs to banner grab for the vulnerability.")
+parser.add_argument('target', help="An ip address (network) or new line delimited file containing IPs to banner grab for the vulnerability.")
 parser.add_argument('-p', '--port', default=22, help="Set port of SSH service")
 parser.add_argument("-a", "--aggressive", action="store_true", help="Identify vulnerable hosts by bypassing authentication")
 
@@ -76,7 +77,9 @@ if os.path.isfile(args.target): #if file add hosts
       for line in f.readlines():
           ips.append(line.strip())
 else: #if not scan the provided IP
-  ips.append(args.target.strip())
+  network = ipaddress.ip_network(text_type(args.target.strip()))
+  for ip in network:
+      ips.append(str(ip))
 
 
 print "Searching for Vulnerable Hosts...\n"
