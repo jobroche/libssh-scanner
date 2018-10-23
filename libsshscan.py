@@ -4,6 +4,8 @@
 
 import socket, argparse, sys, os, paramiko
 
+VERSION = "1.0.2"
+
 class colors(object):
     blue = "\033[1;34m"
     normal = "\033[0;00m"
@@ -56,8 +58,9 @@ def aggressive(ip, port): #bypass auth to verify vulnerable host
   except Exception as e:
     pass
 
-parser = argparse.ArgumentParser(description='libssh Scanner - Find vulnerable libssh services by Leap Security (@LeapSecurity)', version="1.0.2")
+parser = argparse.ArgumentParser(description='libssh Scanner - Find vulnerable libssh services by Leap Security (@LeapSecurity)')
 parser.add_argument('target', help="An ip address or new line delimited file containing IPs to banner grab for the vulnerability.")
+parser.add_argument("-V", "--version", action="version", help="Show version and exit", default=VERSION)
 parser.add_argument('-p', '--port', default=22, help="Set port of SSH service")
 parser.add_argument("-a", "--aggressive", action="store_true", help="Identify vulnerable hosts by bypassing authentication")
 
