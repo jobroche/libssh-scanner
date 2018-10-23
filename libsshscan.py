@@ -11,16 +11,16 @@ class colors(object):
     yellow = "\033[1;33m"
 
 def pstatus(ip, port, banner):
-  print "{blue}[*]{white} {ipaddr}:{port} is not vulnerable to authentication bypass ({banner})".format(blue=colors.blue, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()) 
+  print("{blue}[*]{white} {ipaddr}:{port} is not vulnerable to authentication bypass ({banner})".format(blue=colors.blue, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()))
 
 def ptimeout(ip, port):
-  print "{red}[-]{white} {ipaddr}:{port} has timed out.".format(red=colors.red, white=colors.normal, ipaddr=ip, port=port)
+  print("{red}[-]{white} {ipaddr}:{port} has timed out.".format(red=colors.red, white=colors.normal, ipaddr=ip, port=port))
 
 def ppatch(ip, port, banner):
-  print "{blue}[*]{white} {ipaddr}:{port} has been patched ({banner})".format(blue=colors.blue, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()) 
+  print("{blue}[*]{white} {ipaddr}:{port} has been patched ({banner})".format(blue=colors.blue, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()))
 
 def pvulnerable(ip, port, banner):
-  print "{yellow}[!]{white} {ipaddr}:{port} is likely VULNERABLE to authentication bypass ({banner})".format(yellow=colors.yellow, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()) 
+  print("{yellow}[!]{white} {ipaddr}:{port} is likely VULNERABLE to authentication bypass ({banner})".format(yellow=colors.yellow, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()))
 
 
 def passive(ip, port): #banner grab to verify vulnerable host
@@ -68,7 +68,7 @@ if len(sys.argv) == 1:
 args = parser.parse_args()
 ips, results = [], []
 
-print "\nlibssh scanner {}\n".format(parser.version)
+print("\nlibssh scanner {}\n".format(VERSION))
 
 
 if os.path.isfile(args.target): #if file add hosts
@@ -79,7 +79,7 @@ else: #if not scan the provided IP
   ips.append(args.target.strip())
 
 
-print "Searching for Vulnerable Hosts...\n"
+print("Searching for Vulnerable Hosts...\n")
 if args.aggressive:
   paramiko.util.log_to_file("paramiko.log")
   for ip in ips:
@@ -103,4 +103,4 @@ else: #banner grab
       else: #not vulnerable
         pstatus(ip, args.port, banner)
 
-print "\nScanner Completed Successfully"
+print("\nScanner Completed Successfully")
