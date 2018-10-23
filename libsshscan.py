@@ -93,12 +93,12 @@ else: #banner grab
     if banner:
       if b"libssh-0.6" in banner: #vulnerable
         pvulnerable(ip, args.port, banner)
-      elif b"libssh-0.7" in banner: #chjeck if patched
+      elif b"libssh-0.7" in banner: #check if patched
         if int(banner.split(".")[-1]) >= 6: #libssh is 0.7.6 or greater (patched)
           ppatch(ip, args.port, banner)
         else:
           pvulnerable(ip, args.port, banner)
-      elif b"libssh-0.8" in banner: #chjeck if patched
+      elif b"libssh-0.8" in banner: #check if patched
         if int(banner.split(".")[-1]) >= 4: #libssh is 0.8.4 or greater (patched)
           ppatch(ip, args.port, banner)
         else:
