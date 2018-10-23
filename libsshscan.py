@@ -32,7 +32,7 @@ def passive(ip, port): #banner grab to verify vulnerable host
     s.settimeout(None)
     banner = s.recv(1024)
     s.close()
-    return banner
+    return banner.split("\n")[0]
   except (socket.timeout, socket.error) as e:
     ptimeout(ip, port)
 
