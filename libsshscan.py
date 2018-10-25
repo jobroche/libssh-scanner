@@ -5,7 +5,7 @@
 import socket, argparse, sys, os, paramiko, ipaddress
 from six import text_type
 
-VERSION = "1.0.2"
+VERSION = "1.0.3"
 
 class colors(object):
     blue = "\033[1;34m"
@@ -87,6 +87,7 @@ else: #if not scan the provided IP
 
 
 print("Searching for Vulnerable Hosts...\n")
+
 if args.aggressive:
   paramiko.util.log_to_file("paramiko.log")
   for ip in ips:
@@ -95,19 +96,19 @@ else: #banner grab
   for ip in ips:
     banner = passive(ip, int(args.port)) #banner
     if banner:
-      if b"libssh-0.6" in banner: #vulnerable
+      if any(version in banner for version in [b"libssh-0.6", b"libssh_0.6"]): #vulnerable
         pvulnerable(ip, args.port, banner)
-      elif b"libssh-0.7" in banner: #check if patched
+      elif any(version in banner for version in [b"libssh-0.7", b"libssh_0.7"]):
         if int(banner.split(".")[-1]) >= 6: #libssh is 0.7.6 or greater (patched)
           ppatch(ip, args.port, banner)
-        else:
+        else: #vulnerable
           pvulnerable(ip, args.port, banner)
-      elif b"libssh-0.8" in banner: #check if patched
+      elif any(version in banner for version in [b"libssh-0.8", b"libssh_0.8"]):
         if int(banner.split(".")[-1]) >= 4: #libssh is 0.8.4 or greater (patched)
           ppatch(ip, args.port, banner)
-        else:
+        else: #vulnerable
           pvulnerable(ip, args.port, banner)
       else: #not vulnerable
         pstatus(ip, args.port, banner)
 
-print("\nScanner Completed Successfully")
+print("\nScanner Completed Successfully\n")
