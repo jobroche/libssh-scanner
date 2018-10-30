@@ -1,2 +1,2 @@
-paramiko==2.4.2
 ipaddress<=2.0
+paramiko==2.4.2
