@@ -52,7 +52,7 @@ def passive(ip, port):  # banner grab to verify vulnerable host
         s.settimeout(None)
         banner = s.recv(1024)
         s.close()
-        return banner.split("\n")[0]
+        return banner.split(b"\n")[0]
     except (socket.timeout, socket.error) as e:
         ptimeout(ip, port)
         return ""
@@ -126,13 +126,13 @@ else:  # banner grab
                 pvulnerable(ip, args.port, banner)
             elif any(version in banner for version in [b"libssh-0.7", b"libssh_0.7"]):
                 # libssh is 0.7.6 or greater (patched)
-                if int(banner.split(".")[-1]) >= 6:
+                if int(banner.split(b".")[-1]) >= 6:
                     ppatch(ip, args.port, banner)
                 else:  # vulnerable
                     pvulnerable(ip, args.port, banner)
             elif any(version in banner for version in [b"libssh-0.8", b"libssh_0.8"]):
                 # libssh is 0.8.4 or greater (patched)
-                if int(banner.split(".")[-1]) >= 4:
+                if int(banner.split(b".")[-1]) >= 4:
                     ppatch(ip, args.port, banner)
                 else:  # vulnerable
                     pvulnerable(ip, args.port, banner)
