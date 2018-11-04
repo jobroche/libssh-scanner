@@ -29,3 +29,10 @@ Run `pip install -r requirements.txt` within the cloned libssh-scanner directory
       -v, --version         show program's version number and exit
       -p PORT, --port PORT  Set port of SSH service
       -a, --aggressive      Identify vulnerable hosts by bypassing authentication
+      -t TIMEOUT, --timeout Set socket timeout
+
+## Example usage:
+
+Scan local network on port 23:
+
+    python libsshscan.py -a 192.168.0.0/16 -p 23
